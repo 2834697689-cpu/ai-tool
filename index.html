@@ -1,0 +1,1035 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI翻译工具（硅基流动专属版）</title>
+    <style>
+        /* 基础重置 + 明亮科技渐变背景核心样式 */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        body {
+            color: #1d1d1f;
+            line-height: 1.6;
+            padding: 20px;
+            min-height: 100vh;
+            /* 更专业的科技渐变背景：深蓝+青蓝+浅紫 */
+            background: linear-gradient(135deg, 
+                #e8f4f8 0%, 
+                #f0f8fb 25%, 
+                #f5fafe 50%, 
+                #f0f8fb 75%, 
+                #e8f4f8 100%);
+            background-size: 400% 400%;
+            animation: gradientFlow 18s ease infinite;
+            overflow-x: hidden;
+            /* 更精细的科技网格纹理 */
+            background-image: 
+                linear-gradient(rgba(2, 132, 199, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(2, 132, 199, 0.03) 1px, transparent 1px),
+                linear-gradient(135deg, 
+                    #e8f4f8 0%, 
+                    #f0f8fb 25%, 
+                    #f5fafe 50%, 
+                    #f0f8fb 75%, 
+                    #e8f4f8 100%);
+            background-size: 30px 30px, 30px 30px, 400% 400%;
+        }
+
+        /* 更流畅的背景动画 */
+        @keyframes gradientFlow {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        /* 增强的液体玻璃+毛玻璃核心容器 */
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.99);
+            backdrop-filter: blur(40px);
+            -webkit-backdrop-filter: blur(40px);
+            border-radius: 32px;
+            box-shadow: 
+                0 20px 80px rgba(0, 0, 0, 0.06),
+                0 8px 24px rgba(0, 0, 0, 0.03),
+                inset 0 1px 0 rgba(255, 255, 255, 0.99);
+            border: 1px solid rgba(210, 225, 255, 0.9);
+            overflow: hidden;
+            position: relative;
+            /* 专业科技光效增强 */
+            box-shadow: 0 0 100px rgba(2, 132, 199, 0.08);
+        }
+
+        /* 头部区域 - 专业级样式升级 */
+        .header {
+            padding: 32px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            flex-wrap: wrap;
+            gap: 24px;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+            position: relative;
+        }
+
+        /* 标题区域 - 添加副标题 */
+        .title-wrapper {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .header h1 {
+            font-size: 28px;
+            font-weight: 800;
+            color: #0f172a;
+            letter-spacing: -1px;
+            margin: 0;
+            line-height: 1.2;
+        }
+
+        /* 专属副标题样式 */
+        .header-subtitle {
+            font-size: 15px;
+            color: #0284c7;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            opacity: 0.9;
+        }
+
+        .header-subtitle::before {
+            content: '';
+            display: inline-block;
+            width: 4px;
+            height: 16px;
+            background: linear-gradient(180deg, #0284c7, #0369a1);
+            border-radius: 2px;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 16px;
+            margin-top: 4px;
+        }
+
+        /* 增强的毛玻璃风格按钮 */
+        .toggle-btn {
+            background: rgba(255, 255, 255, 0.92);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            color: #0f172a;
+            border: 1px solid rgba(0, 0, 0, 0.09);
+            border-radius: 18px;
+            padding: 12px 22px;
+            cursor: pointer;
+            font-size: 15px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+        }
+
+        .toggle-btn:hover {
+            background: rgba(255, 255, 255, 1);
+            border-color: rgba(2, 132, 199, 0.2);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.07);
+        }
+
+        .toggle-btn:active {
+            background: rgba(255, 255, 255, 0.95);
+            transform: translateY(0);
+            transition: all 0.1s ease;
+        }
+
+        /* API未配置提示条 - 更专业的样式 */
+        .api-required-hint {
+            padding: 24px 40px;
+            background: rgba(255, 248, 248, 0.98);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+            display: flex;
+            align-items: center;
+            gap: 18px;
+            transition: all 0.3s ease;
+        }
+
+        .hint-icon {
+            font-size: 24px;
+            color: #ef4444;
+            flex-shrink: 0;
+        }
+
+        .hint-text {
+            font-size: 16px;
+            color: #0f172a;
+            flex: 1;
+            line-height: 1.5;
+        }
+
+        .hint-text strong {
+            color: #ef4444;
+            font-weight: 700;
+        }
+
+        .hint-action {
+            margin-left: auto;
+        }
+
+        /* 增强的主按钮样式 */
+        .hint-btn {
+            background: linear-gradient(135deg, #0284c7, #0369a1);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 18px;
+            padding: 14px 28px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* 按钮高光效果增强 */
+        .hint-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.25), transparent);
+            transition: all 0.6s ease;
+        }
+
+        .hint-btn:hover::before {
+            left: 100%;
+        }
+
+        .hint-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 28px rgba(2, 132, 199, 0.22);
+        }
+
+        .hint-btn:active {
+            transform: translateY(0);
+            box-shadow: 0 6px 16px rgba(2, 132, 199, 0.18);
+        }
+
+        /* 增强的毛玻璃面板 */
+        .tips-panel, .api-config {
+            padding: 32px 40px;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+            background: rgba(255, 255, 255, 0.98);
+            backdrop-filter: blur(25px);
+            -webkit-backdrop-filter: blur(25px);
+            display: none;
+            animation: panelFade 0.4s ease forwards;
+            opacity: 0;
+            transform: translateY(15px);
+        }
+
+        .tips-panel.show, .api-config.show {
+            display: block;
+        }
+
+        @keyframes panelFade {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .tips-title, .config-title {
+            font-size: 21px;
+            font-weight: 700;
+            margin-bottom: 24px;
+            color: #0f172a;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .tips-title::after, .config-title::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: linear-gradient(90deg, rgba(2, 132, 199, 0.3), transparent);
+        }
+
+        .tips-content {
+            font-size: 16px;
+            color: #334155;
+            line-height: 1.8;
+        }
+
+        .tips-content p {
+            margin-bottom: 14px;
+        }
+
+        /* 强调仅支持硅基流动AI */
+        .siliconflow-tip {
+            color: #0284c7;
+            font-weight: 700;
+        }
+
+        .tips-content a, .config-tips a {
+            color: #0284c7;
+            text-decoration: none;
+            font-weight: 600;
+            border-bottom: 1px solid transparent;
+            transition: border-color 0.2s ease;
+        }
+
+        .tips-content a:hover, .config-tips a:hover {
+            text-decoration: none;
+            border-bottom: 1px solid #0284c7;
+        }
+
+        /* API配置面板专属样式 - 仅支持硅基流动 */
+        .config-mandatory {
+            font-size: 16px;
+            color: #ef4444;
+            margin-bottom: 28px;
+            font-weight: 600;
+            padding: 18px 24px;
+            background: rgba(255, 248, 248, 0.98);
+            border-radius: 18px;
+            border: 1px solid rgba(239, 68, 68, 0.2);
+        }
+
+        .config-tips {
+            font-size: 15px;
+            color: #334155;
+            margin-bottom: 28px;
+            padding: 18px 24px;
+            background: rgba(241, 245, 249, 0.98);
+            border-radius: 18px;
+        }
+
+        .config-form {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 28px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-group label {
+            font-size: 15px;
+            margin-bottom: 12px;
+            color: #334155;
+            font-weight: 600;
+        }
+
+        .form-group input, .form-group select {
+            padding: 16px 24px;
+            border: 1px solid rgba(0, 0, 0, 0.1);
+            border-radius: 18px;
+            font-size: 16px;
+            outline: none;
+            transition: all 0.3s ease;
+            background: rgba(255, 255, 255, 0.99);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+        }
+
+        .form-group input:focus, .form-group select:focus {
+            border-color: #0284c7;
+            box-shadow: 0 0 0 4px rgba(2, 132, 199, 0.12);
+        }
+
+        .saved-indicator {
+            color: #16a34a;
+            font-size: 15px;
+            margin-top: 24px;
+            display: none;
+            font-weight: 600;
+        }
+
+        /* 核心翻译区域 - 专业级优化 */
+        .translation-area {
+            padding: 40px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 32px;
+        }
+
+        .language-selector {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+        }
+
+        /* 语言选择器 - 增强专业交互效果 */
+        .language-selector select {
+            padding: 14px 24px;
+            border: 1px solid rgba(0, 0, 0, 0.1);
+            border-radius: 18px;
+            font-size: 16px;
+            outline: none;
+            background: rgba(255, 255, 255, 0.99);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            color: #0f172a;
+            appearance: none;
+            background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%230f172a' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpath d='M6 9l6 6 6-6'/%3e%3c/svg%3e");
+            background-repeat: no-repeat;
+            background-position: right 20px center;
+            background-size: 18px;
+            padding-right: 52px;
+            font-weight: 500;
+            /* 核心交互样式 */
+            transition: all 0.3s ease;
+            cursor: pointer;
+            position: relative;
+        }
+
+        /* 语言选择器悬停效果增强 */
+        .language-selector select:hover {
+            border-color: #0284c7;
+            background-color: rgba(255, 255, 255, 1);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 18px rgba(2, 132, 199, 0.12);
+        }
+
+        /* 语言选择器聚焦效果增强 */
+        .language-selector select:focus {
+            border-color: #0284c7;
+            box-shadow: 0 0 0 4px rgba(2, 132, 199, 0.12);
+            transform: translateY(-1px);
+        }
+
+        /* 交换按钮增强交互 */
+        .swap-btn {
+            background: rgba(255, 255, 255, 0.99);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            border: 1px solid rgba(0, 0, 0, 0.1);
+            border-radius: 50%;
+            width: 52px;
+            height: 52px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+            color: #0f172a;
+            /* 增强的过渡动画 */
+            transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+        }
+
+        .swap-btn:hover {
+            background: rgba(255, 255, 255, 1);
+            border-color: #0284c7;
+            transform: rotate(180deg) scale(1.1);
+            box-shadow: 0 8px 20px rgba(2, 132, 199, 0.15);
+            color: #0284c7;
+        }
+
+        .swap-btn:active {
+            transform: rotate(180deg) scale(1.05);
+            box-shadow: 0 4px 12px rgba(2, 132, 199, 0.1);
+        }
+
+        .input-area, .output-area {
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* 专业级文本框样式 */
+        textarea {
+            width: 100%;
+            height: 320px;
+            padding: 24px;
+            border: 1px solid rgba(0, 0, 0, 0.1);
+            border-radius: 24px;
+            resize: vertical;
+            font-size: 17px;
+            line-height: 1.7;
+            outline: none;
+            transition: all 0.3s ease;
+            color: #0f172a;
+            background: rgba(255, 255, 255, 0.99);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+        }
+
+        textarea:focus {
+            border-color: #0284c7;
+            box-shadow: 0 0 0 4px rgba(2, 132, 199, 0.12);
+        }
+
+        textarea::placeholder {
+            color: #64748b;
+            font-size: 16px;
+            opacity: 0.8;
+        }
+
+        /* 翻译按钮容器 */
+        .translate-container {
+            text-align: center;
+            padding: 0 20px 40px;
+        }
+        
+        /* 增强的翻译按钮 */
+        .translate-btn {
+            background: linear-gradient(135deg, #0284c7, #0369a1);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 24px;
+            padding: 18px 56px;
+            font-size: 18px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            display: inline-block;
+            margin: 0;
+        }
+
+        .translate-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.25), transparent);
+            transition: all 0.6s ease;
+        }
+
+        .translate-btn:hover::before {
+            left: 100%;
+        }
+
+        .translate-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 32px rgba(2, 132, 199, 0.28);
+        }
+
+        .translate-btn:active {
+            transform: translateY(0);
+            box-shadow: 0 6px 18px rgba(2, 132, 199, 0.2);
+        }
+
+        .translate-btn:disabled {
+            background: rgba(203, 213, 225, 0.98);
+            color: #64748b;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .translate-btn:disabled::before {
+            display: none;
+        }
+
+        .loading {
+            text-align: center;
+            margin: -28px auto 40px;
+            color: #0284c7;
+            font-size: 16px;
+            font-weight: 600;
+            display: none;
+        }
+
+        /* 专业级错误提示样式 */
+        .error-message {
+            color: #ef4444;
+            text-align: center;
+            margin: -28px auto 40px;
+            padding: 18px 24px;
+            background: rgba(255, 248, 248, 0.98);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            border-radius: 18px;
+            border: 1px solid rgba(239, 68, 68, 0.2);
+            max-width: 600px;
+            display: none;
+            font-size: 16px;
+        }
+
+        /* 响应式适配 - 保持专业感 */
+        @media (max-width: 768px) {
+            .translation-area {
+                grid-template-columns: 1fr;
+                padding: 32px;
+                gap: 28px;
+            }
+            
+            .config-form {
+                grid-template-columns: 1fr;
+            }
+            
+            .header h1 {
+                font-size: 24px;
+            }
+            
+            .header {
+                padding: 28px 32px;
+            }
+            
+            .header-actions {
+                width: 100%;
+                justify-content: flex-end;
+                gap: 12px;
+            }
+            
+            .toggle-btn {
+                padding: 10px 18px;
+                font-size: 14px;
+            }
+            
+            textarea {
+                height: 240px;
+                padding: 20px;
+            }
+            
+            .api-required-hint {
+                padding: 20px 32px;
+                flex-direction: column;
+                gap: 18px;
+                text-align: center;
+            }
+            
+            .hint-action {
+                margin-left: 0;
+                width: 100%;
+            }
+            
+            .hint-btn {
+                width: 100%;
+            }
+            
+            .language-selector select {
+                padding: 12px 20px;
+                font-size: 14px;
+            }
+            
+            .swap-btn {
+                width: 46px;
+                height: 46px;
+                font-size: 20px;
+            }
+            
+            .translate-btn {
+                padding: 16px 40px;
+                font-size: 16px;
+                width: 100%;
+            }
+            
+            .translate-container {
+                padding: 0 20px 32px;
+            }
+            
+            .tips-panel, .api-config {
+                padding: 28px 32px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <!-- 标题区域 - 添加副标题 -->
+            <div class="title-wrapper">
+                <h1>AI翻译工具</h1>
+                <div class="header-subtitle">仅支持硅基流动API | 精准高效翻译</div>
+            </div>
+            <div class="header-actions">
+                <button class="toggle-btn" id="tips-toggle">
+                    <span>💡 使用小贴士</span>
+                </button>
+                <button class="toggle-btn" id="config-toggle">
+                    <span>⚙️ 配置API</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- API未配置提示条 -->
+        <div class="api-required-hint" id="api-required-hint">
+            <span class="hint-icon">⚠️</span>
+            <div class="hint-text">
+                <strong>重要提示：</strong>使用翻译功能前需先配置硅基流动API密钥（本工具仅支持硅基流动API）
+            </div>
+            <div class="hint-action">
+                <button class="hint-btn" id="goto-config-btn">立即配置</button>
+            </div>
+        </div>
+
+        <!-- 小贴士面板 -->
+        <div class="tips-panel" id="tips-panel">
+            <div class="tips-title">使用小贴士</div>
+            <div class="tips-content">
+                <p>1. 本工具仅支持<span class="siliconflow-tip">硅基流动API</span>，无需适配其他接口</p>
+                <p>2. 仅需填写硅基流动API密钥即可使用，API接口地址和模型已默认配置最优值</p>
+                <p>3. 硅基流动官网：<a href="https://siliconflow.cn/" target="_blank">https://siliconflow.cn/</a>（在此获取API密钥）</p>
+                <p>4. 支持中文↔英语、中文↔韩语双向精准翻译，无额外冗余输出</p>
+                <p>5. 按 <strong>Ctrl+Enter</strong> 快捷键可快速触发翻译，提升操作效率</p>
+            </div>
+        </div>
+
+        <!-- API配置面板 - 仅支持硅基流动 -->
+        <div class="api-config" id="api-config">
+            <div class="config-title">硅基流动API配置（本工具仅支持硅基流动API）</div>
+            <div class="config-mandatory">⚠️ 仅需填写硅基流动API密钥即可使用，其他参数已默认配置</div>
+            <div class="config-tips">
+                获取硅基流动API密钥：<a href="https://siliconflow.cn/" target="_blank">https://siliconflow.cn/</a><br>
+                已默认选择硅基流动最优翻译模型：Qwen/Qwen2-7B-Instruct（本工具仅适配该平台模型）
+            </div>
+            <div class="config-form">
+                <div class="form-group">
+                    <label for="api-key">硅基流动API密钥 *</label>
+                    <input type="text" id="api-key" placeholder="请输入你的硅基流动API密钥" value="">
+                </div>
+                <div class="form-group">
+                    <label for="ai-model">硅基流动AI翻译模型（默认最优）</label>
+                    <select id="ai-model">
+                        <option value="Qwen/Qwen2-7B-Instruct" selected>通义千问2-7B（翻译最优）</option>
+                        <option value="meta-llama/Meta-Llama-3-8B-Instruct">Llama3-8B（硅基流动适配版）</option>
+                        <option value="THUDM/chatglm3-6b">ChatGLM3-6B（硅基流动适配版）</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="timeout">硅基流动API请求超时(秒)</label>
+                    <input type="number" id="timeout" min="1" max="60" value="30">
+                </div>
+            </div>
+            <div class="saved-indicator" id="saved-indicator">配置已保存！</div>
+        </div>
+
+        <!-- 核心翻译区域 -->
+        <div class="translation-area">
+            <div class="input-area">
+                <div class="language-selector">
+                    <select id="source-lang">
+                        <option value="zh" selected>中文</option>
+                        <option value="en">英语</option>
+                        <option value="ko">韩语</option>
+                    </select>
+                    <button class="swap-btn" id="swap-btn">↔</button>
+                </div>
+                <textarea id="source-text" placeholder="请输入要翻译的文本..."></textarea>
+            </div>
+
+            <div class="output-area">
+                <div class="language-selector">
+                    <select id="target-lang">
+                        <option value="en" selected>英语</option>
+                        <option value="zh">中文</option>
+                        <option value="ko">韩语</option>
+                    </select>
+                </div>
+                <textarea id="target-text" placeholder="翻译结果将显示在这里..." readonly></textarea>
+            </div>
+        </div>
+
+        <!-- 翻译按钮容器 -->
+        <div class="translate-container">
+            <button class="translate-btn" id="translate-btn">开始翻译（仅支持硅基流动API）</button>
+        </div>
+        <div class="loading" id="loading">翻译中（硅基流动API处理），请稍候...</div>
+        <div class="error-message" id="error-message"></div>
+    </div>
+
+    <script>
+        // DOM元素获取
+        const tipsToggle = document.getElementById('tips-toggle');
+        const tipsPanel = document.getElementById('tips-panel');
+        const configToggle = document.getElementById('config-toggle');
+        const apiConfig = document.getElementById('api-config');
+        const apiRequiredHint = document.getElementById('api-required-hint');
+        const gotoConfigBtn = document.getElementById('goto-config-btn');
+        
+        const apiKeyInput = document.getElementById('api-key');
+        const aiModelSelect = document.getElementById('ai-model');
+        const timeoutInput = document.getElementById('timeout');
+        const savedIndicator = document.getElementById('saved-indicator');
+        
+        const sourceLangSelect = document.getElementById('source-lang');
+        const targetLangSelect = document.getElementById('target-lang');
+        const swapBtn = document.getElementById('swap-btn');
+        
+        const sourceTextArea = document.getElementById('source-text');
+        const targetTextArea = document.getElementById('target-text');
+        
+        const translateBtn = document.getElementById('translate-btn');
+        const loadingIndicator = document.getElementById('loading');
+        const errorMessage = document.getElementById('error-message');
+
+        // 语言名称映射
+        const languageMap = {
+            'zh': '中文',
+            'en': '英语',
+            'ko': '韩语'
+        };
+
+        // 硅基流动API专属配置（本工具仅支持该API）
+        const SILICON_FLOW_CONFIG = {
+            apiUrl: 'https://api.siliconflow.cn/v1/chat/completions',
+            defaultModel: 'Qwen/Qwen2-7B-Instruct'
+        };
+
+        // 切换小贴士面板
+        function toggleTips() {
+            apiConfig.classList.remove('show');
+            configToggle.innerHTML = `<span>⚙️ 配置API</span>`;
+            
+            tipsPanel.classList.toggle('show');
+            const btnText = tipsPanel.classList.contains('show') 
+                ? '💡 收起小贴士' 
+                : '💡 使用小贴士';
+            tipsToggle.innerHTML = `<span>${btnText}</span>`;
+        }
+
+        // 切换API配置面板
+        function toggleConfig() {
+            tipsPanel.classList.remove('show');
+            tipsToggle.innerHTML = `<span>💡 使用小贴士</span>`;
+            
+            apiConfig.classList.toggle('show');
+            const btnText = apiConfig.classList.contains('show') 
+                ? '🔼 收起配置' 
+                : '⚙️ 配置API';
+            configToggle.innerHTML = `<span>${btnText}</span>`;
+        }
+
+        // 保存硅基流动API配置到本地存储
+        function saveConfig() {
+            const config = {
+                apiKey: apiKeyInput.value.trim(),
+                aiModel: aiModelSelect.value || SILICON_FLOW_CONFIG.defaultModel,
+                timeout: timeoutInput.value.trim()
+            };
+            localStorage.setItem('siliconFlowTranslationConfig', JSON.stringify(config));
+            
+            // 显示保存提示
+            savedIndicator.style.display = 'block';
+            setTimeout(() => {
+                savedIndicator.style.display = 'none';
+            }, 2000);
+            
+            // 配置有效硅基流动API密钥后隐藏提示条
+            if (config.apiKey) {
+                apiRequiredHint.style.display = 'none';
+            } else {
+                apiRequiredHint.style.display = 'flex';
+            }
+        }
+
+        // 页面加载时加载硅基流动API配置
+        function loadConfig() {
+            const savedConfig = localStorage.getItem('siliconFlowTranslationConfig');
+            if (savedConfig) {
+                const config = JSON.parse(savedConfig);
+                apiKeyInput.value = config.apiKey || '';
+                aiModelSelect.value = config.aiModel || SILICON_FLOW_CONFIG.defaultModel;
+                timeoutInput.value = config.timeout || 30;
+                
+                // 有硅基流动密钥则隐藏提示条
+                if (config.apiKey) {
+                    apiRequiredHint.style.display = 'none';
+                }
+            } else {
+                // 默认配置（仅硅基流动）
+                aiModelSelect.value = SILICON_FLOW_CONFIG.defaultModel;
+                timeoutInput.value = 30;
+            }
+        }
+
+        // 交换源/目标语言
+        function swapLanguages() {
+            const tempLang = sourceLangSelect.value;
+            sourceLangSelect.value = targetLangSelect.value;
+            targetLangSelect.value = tempLang;
+            
+            const tempText = sourceTextArea.value;
+            sourceTextArea.value = targetTextArea.value;
+            targetTextArea.value = tempText;
+        }
+
+        // 获取语言名称
+        function getLanguageName(code) {
+            return languageMap[code] || code;
+        }
+
+        // 翻译核心函数 - 仅适配硅基流动API
+        async function translateText() {
+            const sourceText = sourceTextArea.value.trim();
+            if (!sourceText) {
+                showError('请输入要翻译的文本');
+                return;
+            }
+
+            const sourceLang = sourceLangSelect.value;
+            const targetLang = targetLangSelect.value;
+            
+            if (sourceLang === targetLang) {
+                showError('源语言和目标语言不能相同');
+                return;
+            }
+
+            // 验证硅基流动API密钥
+            const apiKey = apiKeyInput.value.trim();
+            if (!apiKey) {
+                showError('请先在「配置API」中填写硅基流动API密钥（本工具仅支持硅基流动API）');
+                toggleConfig();
+                apiKeyInput.focus();
+                return;
+            }
+
+            // 显示加载状态
+            setLoading(true);
+            clearError();
+
+            try {
+                const aiModel = aiModelSelect.value;
+                const timeout = parseInt(timeoutInput.value) * 1000;
+
+                // 构建硅基流动API请求参数（专属适配格式）
+                const messages = [
+                    {
+                        role: "system",
+                        content: `你是专业的翻译助手，严格按照要求将${getLanguageName(sourceLang)}翻译成${getLanguageName(targetLang)}。
+1. 只返回翻译结果，不要任何解释、说明、备注
+2. 保持原文的语义完整，翻译准确
+3. 不要添加任何额外的换行或符号`
+                    },
+                    {
+                        role: "user",
+                        content: sourceText
+                    }
+                ];
+
+                const requestData = {
+                    model: aiModel,
+                    messages: messages,
+                    temperature: 0.1,  // 翻译场景使用低温度保证准确性
+                    max_tokens: 4000,
+                    stream: false
+                };
+
+                // 设置请求超时
+                const controller = new AbortController();
+                const timeoutId = setTimeout(() => controller.abort(), timeout);
+
+                // 发送硅基流动API请求（本工具仅支持该接口）
+                const response = await fetch(SILICON_FLOW_CONFIG.apiUrl, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${apiKey}`
+                    },
+                    body: JSON.stringify(requestData),
+                    signal: controller.signal
+                });
+
+                clearTimeout(timeoutId);
+
+                if (!response.ok) {
+                    const errorData = await response.json().catch(() => ({}));
+                    const errorMsg = errorData.error?.message || `硅基流动API请求失败 [${response.status}]`;
+                    throw new Error(`${errorMsg}：请检查硅基流动API密钥是否有效`);
+                }
+
+                const result = await response.json();
+
+                // 解析硅基流动API返回结果
+                if (result.choices && result.choices.length > 0) {
+                    targetTextArea.value = result.choices[0].message.content.trim();
+                } else {
+                    throw new Error('未从硅基流动API获取到翻译结果，请稍后重试');
+                }
+
+            } catch (error) {
+                if (error.name === 'AbortError') {
+                    showError('硅基流动API请求超时：建议增大超时时间');
+                } else {
+                    showError(error.message);
+                }
+                console.error('翻译错误（硅基流动API）：', error);
+            } finally {
+                // 隐藏加载状态
+                setLoading(false);
+            }
+        }
+
+        // 辅助函数：加载状态
+        function setLoading(isLoading) {
+            translateBtn.disabled = isLoading;
+            loadingIndicator.style.display = isLoading ? 'block' : 'none';
+        }
+
+        // 辅助函数：显示错误
+        function showError(message) {
+            errorMessage.textContent = message;
+            errorMessage.style.display = 'block';
+        }
+
+        // 辅助函数：清除错误
+        function clearError() {
+            errorMessage.textContent = '';
+            errorMessage.style.display = 'none';
+        }
+
+        // 绑定所有事件监听
+        function initEventListeners() {
+            // 面板切换
+            tipsToggle.addEventListener('click', toggleTips);
+            configToggle.addEventListener('click', toggleConfig);
+            // 提示条一键配置
+            gotoConfigBtn.addEventListener('click', () => {
+                toggleConfig();
+                if (!apiConfig.classList.contains('show')) toggleConfig();
+                apiKeyInput.focus();
+            });
+
+            // 硅基流动API配置项变化时自动保存
+            [apiKeyInput, aiModelSelect, timeoutInput].forEach(el => {
+                el.addEventListener('change', saveConfig);
+                el.addEventListener('blur', saveConfig);
+            });
+
+            // 语言交换 + 翻译触发
+            swapBtn.addEventListener('click', swapLanguages);
+            translateBtn.addEventListener('click', translateText);
+            // 快捷键翻译
+            sourceTextArea.addEventListener('keydown', (e) => {
+                if (e.ctrlKey && e.key === 'Enter') translateText();
+            });
+        }
+
+        // 页面初始化
+        function init() {
+            loadConfig();
+            initEventListeners();
+        }
+
+        // 页面加载完成后执行初始化
+        document.addEventListener('DOMContentLoaded', init);
+    </script>
+</body>
+</html>
